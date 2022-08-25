@@ -1,7 +1,10 @@
 import Head from 'next/head';
-import { Header } from '../components';
+import { getSession } from 'next-auth/react';
+import { Header, Login, Sidebar } from '../components';
 
-export default function Home() {
+export default function Home({ session }) {
+  if (!session) return <Login />;
+
   return (
     <div className="h-screen bg-gray-100 overflow-hidden">
       <Head>
@@ -10,13 +13,28 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      {/* Header first */}
       <Header />
+      {/* Set up Next auth second */}
 
-      {/* SideBar */}
+      <main className="flex">
+        {/* SideBar */}
+        <Sidebar />
+        {/* Feed */}
 
-      {/* Feed */}
-
-      {/* Widgets */}
+        {/* Widgets */}
+      </main>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  // Get the user
+  const session = await getSession(context);
+
+  return {
+    props: {
+      session,
+    },
+  };
 }
